@@ -1,7 +1,6 @@
 package hosptality.claysys.com.myapplication.backend_connection;
 
-import android.util.Log;
-
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -71,9 +70,14 @@ public class FirebaseService implements FirbaseConstant {
         });
     }
 
-    public void insert(ProductModel productModel) {
-        if (databaseReference.child(FOOD_ITEMS).child(productModel.getId()).setValue(productModel).isSuccessful()) {
-            Log.d("TAG", "insert: " + "succes");
-        }
+    public void insert(ProductModel productModel, final AddProductActivity activity) {
+        databaseReference.child(FOOD_ITEMS).child(productModel.getId()).setValue(productModel).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                activity.submissionSuccessful();
+            }
+        });
+
+
     }
 }

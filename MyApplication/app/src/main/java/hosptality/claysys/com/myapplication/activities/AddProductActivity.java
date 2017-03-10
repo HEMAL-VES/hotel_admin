@@ -8,9 +8,10 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.google.firebase.storage.OnProgressListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.UploadTask;
 import com.nguyenhoanglam.imagepicker.activity.ImagePicker;
 import com.nguyenhoanglam.imagepicker.activity.ImagePickerActivity;
@@ -93,26 +94,27 @@ public class AddProductActivity extends ContainerActivity {
 
     @OnClick(R.id.submitButton)
     public void submitValues() {
-        ProductModel productModel = new ProductModel();
-//        productModel.setCatogoryid(((CategoriesModel) mProCatogoriesSpinner.getSelectedItem()).getId());
-//        productModel.setComment(mProDescriptionEditText.getText().toString());
-//        productModel.setCount(Integer.parseInt(mProQuantitiyEditText.getText().toString()));
-//        productModel.setName(mProNameEditText.getText().toString());
-        productModel.setId(Utils.getSaltString());
-        productModel.setPrice(mProPriceEditText.getText().toString());
-//        productModel.setType(((ProductTypeModel) mProTypeSpinner.getSelectedItem()).getId());
 
+        final String saltString = Utils.getSaltString();
 
-        UploadTask uploadTask = FirbaseFileService.getInstance().uploadFile(this, productModel.getId(), images.get(0));
-        uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+        UploadTask uploadTask = FirbaseFileService.getInstance().uploadFile(this, saltString, images.get(0));
+        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
-            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-                System.out.println("Upload is " + progress + "% done");
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                ProductModel productModel = new ProductModel();
+                productModel.setImages(images);
+                productModel.setCatogoryid(((CategoriesModel) mProCatogoriesSpinner.getSelectedItem()).getId());
+                productModel.setComment(mProDescriptionEditText.getText().toString());
+                productModel.setCount(Integer.parseInt(mProQuantitiyEditText.getText().toString()));
+                productModel.setName(mProNameEditText.getText().toString());
+                productModel.setId(saltString);
+                productModel.setPrice(mProPriceEditText.getText().toString());
+                productModel.setType(((ProductTypeModel) mProTypeSpinner.getSelectedItem()).getId());
+                FirebaseService.getInstance().insert(productModel, AddProductActivity.this);
             }
         });
 
-//        FirebaseService.getInstance().insert(productModel);
+//
 
 
     }
@@ -143,5 +145,10 @@ public class AddProductActivity extends ContainerActivity {
                     .dontAnimate()
                     .into(imageView);
         }
+    }
+
+    public void submissionSuccessful() {
+        Toast.makeText(this, "Successfully added", Toast.LENGTH_SHORT).show();
+        finish();
     }
 }

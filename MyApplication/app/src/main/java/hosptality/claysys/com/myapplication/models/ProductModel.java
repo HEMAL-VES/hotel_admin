@@ -1,6 +1,7 @@
 package hosptality.claysys.com.myapplication.models;
 
 import com.google.firebase.database.IgnoreExtraProperties;
+import com.nguyenhoanglam.imagepicker.model.Image;
 
 import java.util.ArrayList;
 
@@ -17,16 +18,16 @@ public class ProductModel {
     private String name;
     private String price;
     private int type;
-    private ArrayList<String> images;
+    private ArrayList<Image> images;
 
     public ProductModel() {
     }
 
-    public ArrayList<String> getImages() {
+    public ArrayList<Image> getImages() {
         return images;
     }
 
-    public void setImages(ArrayList<String> images) {
+    public void setImages(ArrayList<Image> images) {
         this.images = images;
     }
 
